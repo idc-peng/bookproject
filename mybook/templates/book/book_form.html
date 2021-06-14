@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h5 class="my-3 border-bottom pb-2">책 등록</h5>
+    <form method="post" class="post-form my-3">
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                {% for field in form %}
+                    {% if field.errors %}
+                    <strong>{{ field.label }}</strong>
+                    {{ field.errors }}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="form-group">
+            <label for="subject">제목</label>
+            <input type="text" class="form-control" name="subject" id="subject"
+                   value="{{ form.subject.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="publisher">출판사</label>
+            <input type="text" class="form-control" name="publisher" id="publisher"
+                   value="{{ form.publisher.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="writer">저자</label>
+            <input type="text" class="form-control" name="writer" id="writer"
+                   value="{{ form.writer.value|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="content">내용</label>
+            <textarea class="form-control" name="content" id="content"
+                      rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
+        </div>
+        <div class="form-group">
+            <input type="file" name="photo" id="photo"><br>
+        </div>
+        <button type="submit" class="btn btn-primary">등록하기</button>
+    </form>
+</div>
+{% endblock %}

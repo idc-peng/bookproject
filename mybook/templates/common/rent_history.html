@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load book_filter %}
+{% block content %}
+<!-- 프로필 화면 -->
+<div class="container my-3">
+    <div class="row">
+        <div class="col-12">
+            <p><h2>{{ user.username }} 님의 도서 대출 기록</h2>
+              <h5 class="text-right">총 {{ rent_book_all_list.count }}권</h5></p>
+            <table class="table table-striped thead-light">
+                <thead>
+                <tr class="text-center">
+                    <th style="width:50%">책제목</th>
+                    <th>대출일</th>
+                    <th>반납일</th>
+                    <th>반납여부</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if rent_book_all_list %}
+                {% for rent_book in rent_book_all_list %}
+                <tr class="text-center">
+                    <td class="text-left">
+                        <a href="{% url 'book:detail' rent_book.book.id %}">
+                            {{ rent_book.book.subject }}
+                        </a>
+                    </td>
+                    <td>{{ rent_book.rent_start }}</td>
+                    <td>{{ rent_book.rent_end }}</td>
+                    {% if rent_book.return_status %}
+                    <td>O</td>
+                    {% else %}
+                    <td>X</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3">대여했던 책이 없습니다.</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

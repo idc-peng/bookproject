@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load book_filter %}
+{% block content %}
+<!-- 프로필 화면 -->
+<div class="container my-3">
+    <div class="row">
+        <div class="col-12">
+            <p><h2>전체 도서 대출 현황</h2></p>
+            <div class="row justify-content my-3">
+                <div class="col-2">
+                    <select class="form-control so">
+                        <option value="userID" {% if so == 'userID' %}selected{% endif %}>
+                            유저id순
+                        </option>
+                        <option value="rent_date" {% if so == 'rent_date' %}selected{% endif %}>
+                            대여일순
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr class="text-center table-info">
+                    <th>유저명</th>
+                    <th style="width:50%">책제목</th>
+                    <th>대출일</th>
+                    <th>반납일</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if rent_book_list %}
+                {% for rent_book in rent_book_list %}
+                <tr class="text-center">
+                    <td>{{ rent_book.book.rent_info.user.username }}</td>
+                    <td class="text-left">
+                        <a href="{% url 'book:detail' rent_book.book.id %}">
+                            {{ rent_book.book.subject }}
+                        </a>
+                    </td>
+                    <td>{{ rent_book.rent_start }}</td>
+                    <td>{{ rent_book.rent_end }}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3">반납할 책이 없습니다.</td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <form id="searchForm" method="get" action="{% url 'book:rent_book_all' request.user.id %}">
+        <input type="hidden" id="so" name="so" value="{{ so }}">
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type='text/javascript'>
+$(document).ready(function(){
+    $(".so").on('change', function() {
+        $("#so").val($(this).val());
+        $("#page").val(1);
+        $("#searchForm").submit();
+    });
+});
+</script>
+{% endblock %}

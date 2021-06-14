@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load book_filter %}
+{% block content %}
+<div class="container my-3" xmlns="http://www.w3.org/1999/html">
+    {% if messages %}
+    <div class="alert alert-danger my-3" role="alert">
+        {% for message in messages %}
+            <strong>{{ message.tags }}</strong>
+            <ul><li>{{ message.message }}</li></ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row my-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-text">
+                        <div class="align-items-start border-bottom">
+                            <h1>제목: {{ book.subject }}</h1>
+                            <p><strong>저자:</strong> {{ book.writer }}</p>
+                            <p><strong>출판사:</strong> {{ book.publisher }}</p>
+                            {% if book.review_set.count > 0 %}
+                            <p><strong>평점 : {{ score_avg }}점</strong></p>
+                            {% else %}
+                            <p><strong>평점이 없습니다.</strong></p>
+                            {% endif %}
+                            <p><strong>내용</strong></p>
+                        </div>
+                        <div class="border-bottom">
+                            <br>{{ book.content|mark }}<br>
+                            {% if book.photo %}
+                                살려줘
+<!--                            <img src="/static/{{ book.photo.path }}" alt="">-->
+                            {% endif %}
+                        </div>
+                    </div>
+                    <p></p>
+                    {% if user.is_authenticated %}  <!-- 로그인 시 -->
+                    {% if not book.rent_info %}     <!-- 책 대여 정보가 없을 시 -->
+                    <div class="d-flex justify-content-end">   <!-- post 방식으로 대여 -->
+                        <div type="text" class="py-2 text-muted">
+                            도서 대출자가 없습니다. <br>
+                            반납 기간은 일주일입니다.
+                        </div>
+                    </div>
+                    {% else %}                      <!-- 대여자가 있을 시 -->
+                    <div class="d-flex justify-content-end">
+                        <div type="text" class="py-2 text-muted">
+                            {{ book.rent_info.user.username }}님 대출중 <br>
+                            반납만기일 : {{ book.rent_info.rent_end}}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    <div class="my-3">
+                        {% if request.user == book.author %}
+                        <a href="{% url 'book:book_modify' book.id %}"
+                           class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="#" class="delete btn btn-sm btn-outline-secondary"
+                           data-uri="{% url 'book:book_delete' book.id %}">삭제</a>
+                        {% endif %}
+                        <a href="#" data-uri="{% url 'book:vote_book' book.id %}"
+                            class="recommend btn btn-sm btn-danger my-1">추천수{{ book.voter.count }}</a>
+                        <div class="form-row float-right">
+                            {% if not book.rent_info %}
+                            <a href="#" class="rent btn btn-info"
+                                data-uri="{% url 'book:rent_book' book.id %}">도서 대여</a>
+                            {% else %}
+                            <a href="#" class="return flex-row-reverse btn btn-danger"
+                               data-uri="{% url 'book:return_book' book.id %}">도서 반납</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if book.modify_date %}
+                        <p class="text-right text-primary">modified at - {{ book.modify_date }}</p>
+                    {% endif %}
+                    {% if book.comment_set.count > 0 %}
+                    <div class="mt-3">
+                    {% for comment in book.comment_set.all %}
+                        <a name="comment_{{ comment.id }}"></a>
+                        <div class="comment py-2 text-muted">
+                            <span style="white-space: pre-line;">{{ comment.content }}</span>
+                            <span>
+                                - {{ comment.author }}, {{ comment.create_date }}
+                                {% if comment.modify_date %}
+                                (수정:{{ comment.modify_date }})
+                                {% endif %}
+                            </span>
+                            {% if request.user == comment.author %}
+                            <a href="{% url 'book:comment_modify_book' comment.id %}"
+                               class="small">수정</a>,
+                            <a href="#" class="small delete"
+                               data-uri="{% url 'book:comment_delete_book' comment.id %}">
+                                삭제
+                            </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <a href="{% url 'book:comment_create_book' book.id %}"
+                           class="small"><small>댓글 추가 ..</small></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h5 class="border-bottom my-3 py-2">
+        {{ book.review_set.count }}개의 리뷰가 있습니다.
+    </h5>
+    {% for review in book.review_set.all %}
+    <a name="review_{{ review.id }}"></a>
+    <div class="row my-3">
+<!--            <div class="bg-light text-center p-3 border font-weight-bolder mb-1">-->
+<!--                {{ review.voter.count }}-->
+<!--            </div>-->
+        <div class="col-12">
+            <div class="card my-3">
+                <div class="card-header">
+                    별점 - {{ review.score }}점
+                </div>
+                <div class="card-body">
+                    <!-- 리뷰에 comment 가 있을 이유가 없음 -->
+<!--                    {% if review.comment_set.count > 0 %}-->
+<!--                    <div class="mt-3">-->
+<!--                    {% for comment in review.comment_set.all %}-->
+<!--                        <a name="comment_{{ comment.id }}"></a>-->
+<!--                        <div class="comment py-2 text-muted">-->
+<!--                            <span style="white-space: pre-line;">{{ comment.content }}</span>-->
+<!--                            <span>-->
+<!--                                - {{ comment.author }}, {{ comment.create_date }}-->
+<!--                                {% if comment.modify_date %}-->
+<!--                                (수정:{{ comment.modify_date }})-->
+<!--                                {% endif %}-->
+<!--                            </span>-->
+<!--                            {% if request.user == comment.author %}-->
+<!--                            <a href="{% url 'book:comment_modify_review' comment.id %}"-->
+<!--                               class="small">수정</a>,-->
+<!--                            <a href="#" class="small delete"-->
+<!--                               data-uri="{% url 'book:comment_delete_review' comment.id %}">-->
+<!--                                삭제-->
+<!--                            </a>-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
+<!--                    {% endfor %}-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+
+                    <div class="card-text">
+                        {{ review.content|mark }}
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        {% if review.modify_date %}
+                        <div class="badge badge-light p-2 text-left mx-3">
+                            <div class="mb-2">modified at</div>
+                            <div>{{ review.modify_date }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="badge badge-light p-2 text-left">
+                            <div class="mb-2">{{ review.author.username }}</div>
+                            <div>{{ review.create_date }}</div>
+                        </div>
+                    </div>
+<!--                    <div>-->
+<!--                        <a href="{% url 'book:comment_create_review' review.id %}"-->
+<!--                           class="small"><small>댓글 추가 ..</small></a>-->
+<!--                    </div>-->
+                    <div class="my-3">
+                    {% if request.user == review.author %}
+                        <a href="{% url 'book:review_modify' review.id %}"
+                           class="btn btn-sm btn-outline-warning">수정</a>
+                        <a href="#" class="delete btn btn-sm btn-outline-danger"
+                           data-uri="{% url 'book:review_delete' review.id %}">삭제</a>
+                    {% endif %}
+                    <a href="#" data-uri="{% url 'book:vote_review' review.id %}"
+                        class="recommend btn btn-sm btn-danger">추천수{{ review.voter.count }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <form action="{% url 'book:review_create' book.id %}" method="post" class="my-3">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+        {% for field in form %}
+            {% if field.errors %}
+            <strong>{{ field.label }}</strong>
+            {{ field.errors }}
+            {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label for="id_score">평점:</label>
+            <input type="number" name="score" class="score"
+                   {% if not user.is_authenticated %}disabled{% endif %}
+                   min="0" max="5" required id="id_score">
+            <textarea name="content" id="content"
+                      {% if not user.is_authenticated %}disabled{% endif %}
+                      class="form-control" rows="3"></textarea>
+        </div>
+        <input type="submit" value="답변 등록" class="btn btn-primary">
+    </form>
+</div>
+
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $(".delete").on('click', function() {
+        if(confirm("정말로 삭제하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+
+    $(".recommend").on('click', function() {
+        if(confirm("정말로 추천하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+
+    $(".rent").on('click', function() {
+        if(confirm("도서 대출을 하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+
+    $(".return").on('click', function() {
+        if(confirm("도서를 반납하시겠습니까?")) {
+            location.href = $(this).data('uri');
+        }
+    });
+
+});
+</script>
+{% endblock %}
