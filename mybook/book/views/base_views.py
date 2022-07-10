@@ -35,7 +35,7 @@ def index(request):
 
 def detail(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
-    score_list = Review.objects.filter(book_id=book_id).aggregate(Avg('score'))
+    score_list = Review.objects.filter(book_id=book_id).aggregate(Avg('score'))     # 평점을 계산하기 위한 리스트
     score_avg = score_list.get('score__avg')
     context = {'book': book, 'score_avg': score_avg}
     return render(request, 'book/book_detail.html', context)

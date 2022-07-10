@@ -19,7 +19,7 @@ class BookForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['score', 'content']
+        fields = ['score', 'content']   # score 추가
         score = forms.IntegerField(
             required=True,
             label='평점',

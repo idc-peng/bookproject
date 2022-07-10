@@ -16,6 +16,7 @@ def book_create(request):
             book = form.save(commit=False)
             book.author = request.user
             book.create_date = timezone.now()
+            book.photo = request.FILES['photo']     # 사진을 저장한다.
             book.save()
             return redirect('book:index')
     else:

@@ -9,7 +9,7 @@ class BookAdmin(admin.ModelAdmin):
 
 
 @admin.register(RentHistory)
-class RentHistoryAdmin(admin.ModelAdmin):
+class RentHistoryAdmin(admin.ModelAdmin):   # 대여 기록을 admin 에서 볼 수 있도록 하였다.
     list_display = ['id', 'user', 'book', 'rent_start', 'rent_end', 'return_status']
     list_display_links = ['user', 'book']
 # class ProfileInline(admin.StackedInline):

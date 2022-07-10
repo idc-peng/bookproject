@@ -9,12 +9,13 @@ class Book(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                related_name='author_book')
     subject = models.CharField(max_length=200)
-    writer = models.CharField(max_length=100)
-    publisher = models.CharField(max_length=100)
+    writer = models.CharField(max_length=100)       # 저자
+    publisher = models.CharField(max_length=100)    # 출판사
     content = models.TextField()
     create_date = models.DateTimeField()
     modify_date = models.DateTimeField(null=True, blank=True)
     voter = models.ManyToManyField(User, related_name='voter_book')
+    # 사진필드이다.
     photo = models.ImageField(blank=True, null=True)
 
     # 대출 정보

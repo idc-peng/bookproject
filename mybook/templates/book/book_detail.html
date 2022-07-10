@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load book_filter %}
 {% block content %}
-<div class="container my-3" xmlns="http://www.w3.org/1999/html">
+<div class="container my-3">
     {% if messages %}
     <div class="alert alert-danger my-3" role="alert">
         {% for message in messages %}
@@ -12,7 +12,7 @@
     {% endif %}
 
     <div class="row my-3">
-        <div class="col-12">
+        <div class="col-9">
             <div class="card">
                 <div class="card-body">
                     <div class="card-text">
@@ -29,10 +29,6 @@
                         </div>
                         <div class="border-bottom">
                             <br>{{ book.content|mark }}<br>
-                            {% if book.photo %}
-                                살려줘
-                            <img src="/static/{{ book.photo.path }}" alt="">
-                            {% endif %}
                         </div>
                     </div>
                     <p></p>
@@ -59,14 +55,18 @@
                            class="btn btn-sm btn-outline-secondary">수정</a>
                         <a href="#" class="delete btn btn-sm btn-outline-secondary"
                            data-uri="{% url 'book:book_delete' book.id %}">삭제</a>
-                        {% endif %}
+                        <!-- 작성자는 추천할 수 없다. -->
+                        <a href="#" data-uri="#"
+                            class="btn btn-sm btn-danger my-1">추천수{{ book.voter.count }}</a>
+                        {% else %}
                         <a href="#" data-uri="{% url 'book:vote_book' book.id %}"
                             class="recommend btn btn-sm btn-danger my-1">추천수{{ book.voter.count }}</a>
+                        {% endif %}
                         <div class="form-row float-right">
-                            {% if not book.rent_info %}
+                            {% if not book.rent_info %} <!-- 도서 대여자가 없을 경우 -->
                             <a href="#" class="rent btn btn-info"
                                 data-uri="{% url 'book:rent_book' book.id %}">도서 대여</a>
-                            {% else %}
+                            {% else %}                  <!-- 도서 대여자가 있을 경우 반납 표시 -->
                             <a href="#" class="return flex-row-reverse btn btn-danger"
                                data-uri="{% url 'book:return_book' book.id %}">도서 반납</a>
                             {% endif %}
@@ -99,12 +99,17 @@
                     {% endfor %}
                     </div>
                     {% endif %}
-                    <div>
-                        <a href="{% url 'book:comment_create_book' book.id %}"
-                           class="small"><small>댓글 추가 ..</small></a>
-                    </div>
+<!--                    <div>-->
+<!--                        <a href="{% url 'book:comment_create_book' book.id %}"-->
+<!--                           class="small"><small>댓글 추가 ..</small></a>-->
+<!--                    </div>-->
                 </div>
             </div>
+        </div>
+        <div class="col-2"> <!-- 추천 관련 영역 -->
+            {% if book.photo %} <!-- 사진 영역 path, 크기 -->
+            <img src="/static/{{ book.photo.path }}" alt="" width = "250" height="380">
+            {% endif %}
         </div>
     </div>
     <h5 class="border-bottom my-3 py-2">
@@ -118,7 +123,7 @@
 <!--            </div>-->
         <div class="col-12">
             <div class="card my-3">
-                <div class="card-header">
+                <div class="card-header">   <!-- 댓글 헤더에 별점 -->
                     별점 - {{ review.score }}점
                 </div>
                 <div class="card-body">
@@ -195,6 +200,7 @@
         </div>
         {% endif %}
         <div class="form-group">
+            {% if request.user != book.author %}    <!-- 글쓴이는 못쓰도록  -->
             <label for="id_score">평점:</label>
             <input type="number" name="score" class="score"
                    {% if not user.is_authenticated %}disabled{% endif %}
@@ -202,8 +208,11 @@
             <textarea name="content" id="content"
                       {% if not user.is_authenticated %}disabled{% endif %}
                       class="form-control" rows="3"></textarea>
+            {% endif %}
         </div>
+        {% if request.user != book.author %}
         <input type="submit" value="답변 등록" class="btn btn-primary">
+        {% endif %}
     </form>
 </div>
 

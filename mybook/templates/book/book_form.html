@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <h5 class="my-3 border-bottom pb-2">책 등록</h5>
-    <form method="post" class="post-form my-3">
+    <form method="post" class="post-form my-3" enctype="multipart/form-data">
         {% csrf_token %}
         {% if form.errors %}
             <div class="alert alert-danger" role="alert">
@@ -20,12 +20,12 @@
             <input type="text" class="form-control" name="subject" id="subject"
                    value="{{ form.subject.value|default_if_none:'' }}">
         </div>
-        <div class="form-group">
+        <div class="form-group">        <!-- 출판사 -->
             <label for="publisher">출판사</label>
             <input type="text" class="form-control" name="publisher" id="publisher"
                    value="{{ form.publisher.value|default_if_none:'' }}">
         </div>
-        <div class="form-group">
+        <div class="form-group">        <!-- 저자 -->
             <label for="writer">저자</label>
             <input type="text" class="form-control" name="writer" id="writer"
                    value="{{ form.writer.value|default_if_none:'' }}">
@@ -35,7 +35,8 @@
             <textarea class="form-control" name="content" id="content"
                       rows="10">{{ form.content.value|default_if_none:'' }}</textarea>
         </div>
-        <div class="form-group">
+        <div class="form-group">        <!-- 사진 첨부 -->
+            <label for="photo">사진</label>
             <input type="file" name="photo" id="photo"><br>
         </div>
         <button type="submit" class="btn btn-primary">등록하기</button>

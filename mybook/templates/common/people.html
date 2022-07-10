@@ -8,9 +8,9 @@
             <div class="row align-items-center">
                 <ul>
                     <li><h3> username : {{ person.username }}</h3></li>
-                    <!-- <li><p>{{ person.profile.description }}</p></li> -->
                 </ul>
             </div>
+            <!-- 부트스트랩 기능 중 하나인 버튼 그룹을 사용하였습니다. -->
             <div class="row align-items-end">
                 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                     <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -31,6 +31,7 @@
                         </a>
                     </div>
                     {% endif %}
+                    <!-- 프로필 편집은 현재 미구현입니다. -->
                     <div class="btn-group mr-2" role="group" aria-label="Third group">
                         <a href="#"><button class="btn btn-success">프로필 편집</button></a>
                     </div>
